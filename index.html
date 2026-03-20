@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蒲东中心校初中部 表白墙</title>
+    <style>
+        body {
+            background: #ffe6ef;
+            font-family: sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #c53a5f;
+            text-align: center;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ffcdd9;
+            border-radius: 20px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #e66a7e;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 30px;
+            font-size: 16px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .message-item {
+            background: #fff9fb;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e66a7e;
+        }
+        .target {
+            color: #c53a5f;
+            font-weight: bold;
+        }
+        .time {
+            color: #999;
+            font-size: 12px;
+        }
+        .like-btn {
+            background: #f0f0f0;
+            width: auto;
+            padding: 5px 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>💖 蒲东中心校初中部 表白墙</h1>
+    
+    <div class="card">
+        <h3>📝 发布表白</h3>
+        <input type="text" id="target" placeholder="表白对象，例如：九年级三班 李明">
+        <textarea id="content" rows="3" placeholder="写下你的真心话..."></textarea>
+        <input type="text" id="name" placeholder="署名（留空则匿名）">
+        <button onclick="publish()">✨ 发布表白</button>
+    </div>
+    
+    <div class="card">
+        <h3>❤️ 表白墙列表</h3>
+        <div id="list"></div>
+    </div>
+</div>
+
+<script>
+    var messages = [];
+    
+    function load() {
+        var saved = localStorage.getItem('lovewall');
+        if (saved) {
+            messages = JSON.parse(saved);
+        } else {
+            messages = [
+                { target: '九年级二班 赵同学', content: '中考加油，未来可期！', name: '隔壁班小透明', time: Date.now() - 86400000, likes: 5 },
+                { target: '数学老师 王老师', content: '谢谢您的耐心教导！', name: '数学课代表', time: Date.now() - 172800000, likes: 12 }
+            ];
+        }
+        show();
+    }
+    
+    function save() {
+        localStorage.setItem('lovewall', JSON.stringify(messages));
+    }
+    
+    function formatTime(t) {
+        var d = new Date(t);
+        return (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+    }
+    
+    function show() {
+        var list = document.getElementById('list');
+        if (messages.length === 0) {
+            list.innerHTML = '<p>💔 暂无表白，快来发第一条吧～</p>';
+            return;
+        }
+        var html = '';
+        for (var i = messages.length-1; i >= 0; i--) {
+            var m = messages[i];
+            var nameShow = m.name ? m.name : '匿名的心';
+            html += '<div class="message-item">';
+            html += '<div class="target">🎀 致 ' + escapeHtml(m.target) + '</div>';
+            html += '<div style="margin: 10px 0;">' + escapeHtml(m.content) + '</div>';
+            html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
+            html += '<span>✍️ ' + escapeHtml(nameShow) + '</span>';
+            html += '<span class="time">' + formatTime(m.time) + '</span>';
+            html += '</div>';
+            html += '<button class="like-btn" onclick="like(' + i + ')">❤️ 点赞 ' + (m.likes || 0) + '</button>';
+            html += '</div>';
+        }
+        list.innerHTML = html;
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function publish() {
+        var target = document.getElementById('target').value.trim();
+        var content = document.getElementById('content').value.trim();
+        var name = document.getElementById('name').value.trim();
+        
+        if (!target) {
+            alert('请填写表白对象');
+            return;
+        }
+        if (!content) {
+            alert('请填写表白内容');
+            return;
+        }
+        
+        messages.push({
+            target: target,
+            content: content,
+            name: name,
+            time: Date.now(),
+            likes: 0
+        });
+        
+        save();
+        show();
+        
+        document.getElementById('target').value = '';
+        document.getElementById('content').value = '';
+        document.getElementById('name').value = '';
+        
+        alert('💖 发布成功！');
+    }
+    
+    function like(index) {
+        messages[index].likes = (messages[index].likes || 0) + 1;
+        save();
+        show();
+    }
+    
+    load();
+</script>
+</body>
+</html>
