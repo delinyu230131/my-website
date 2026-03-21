@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2026中考成绩查询系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 32px;
+            max-width: 500px;
+            width: 100%;
+            padding: 30px 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            background: #fef3c7;
+            color: #b45309;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 24px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: #f9fafb;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 40px;
+            width: 100%;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .result-area {
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 2px dashed #e5e7eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .blessing-box {
+            background: linear-gradient(120deg, #fdfbfb 0%, #f7f3ff 100%);
+            border-radius: 28px;
+            padding: 24px;
+            margin-top: 10px;
+        }
+
+        .score-number {
+            font-size: 52px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 10px 0;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: gold;
+            position: fixed;
+            top: -10px;
+            animation: fall linear forwards;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .quote {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 16px;
+            font-style: italic;
+        }
+
+        footer {
+            margin-top: 24px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+<div class="card" id="app">
+    <h1>📅 2026 中考成绩查询</h1>
+    <div class="badge">🎓 河南省 · 普通高中招生考试</div>
+
+    <div class="input-group">
+        <label>📝 准考证号 / 身份证号</label>
+        <input type="text" id="studentId" placeholder="请输入准考证号或身份证号" autocomplete="off">
+    </div>
+
+    <div class="input-group">
+        <label>🔐 查询密码</label>
+        <input type="password" id="password" placeholder="请输入查询密码（随便输）">
+    </div>
+
+    <button id="queryBtn">🔍 立即查询成绩</button>
+
+    <div id="resultPanel" class="result-area hidden">
+        <div id="resultContent"></div>
+    </div>
+    <footer>❤️ 梦想不会发光，发光的是追梦的你</footer>
+</div>
+
+<script>
+    const queryBtn = document.getElementById('queryBtn');
+    const resultPanel = document.getElementById('resultPanel');
+    const resultContent = document.getElementById('resultContent');
+
+    // 超暖心的祝福文案库
+    const blessingMessages = [
+        { title: "🎉 金榜题名，未来可期！", message: "所有的努力都不会被辜负，高中生活等着你去闪耀！" },
+        { title: "🌟 你是最棒的星星！", message: "中考只是人生的一个站点，下一站风景更美。" },
+        { title: "💪 拼搏的少年，光芒万丈", message: "每一滴汗水都会变成未来的礼物。" },
+        { title: "🌸 青春无悔，前程似锦", message: "不管结果如何，那个全力以赴的你，已经赢了。" },
+        { title: "🚀 未来已来，乘风破浪", message: "去更远的地方，见更亮的光。" },
+        { title: "🏆 王者绝非偶然", message: "你的努力，时间都记得。" },
+        { title: "✨ 乾坤未定，你我皆是黑马", message: "继续向前冲吧，少年！" },
+        { title: "🍀 愿你合上笔盖的刹那，有侠客收剑入鞘的骄傲", message: "青春不散场，梦想正启航。" },
+        { title: "🌈 关关难过关关过，前路漫漫亦灿灿", message: "高中三年，继续发光！" },
+        { title: "⭐️ 你就是那个被寄予厚望的自己", message: "带着勇气，奔赴下一场山海。" }
+    ];
+
+    // 假装“成绩”数据
+    const fakeScores = [
+        { chinese: 108, math: 112, english: 109, physics: 64, chemistry: 47, total: 612, rank: "全县前12%" },
+        { chinese: 114, math: 118, english: 115, physics: 68, chemistry: 49, total: 655, rank: "全县前3%" },
+        { chinese: 96, math: 105, english: 98, physics: 55, chemistry: 42, total: 542, rank: "全县前38%" },
+        { chinese: 120, math: 108, english: 112, physics: 70, chemistry: 50, total: 640, rank: "全县前5%" },
+        { chinese: 102, math: 98, english: 104, physics: 60, chemistry: 45, total: 569, rank: "全县前25%" }
+    ];
+
+    function getRandomScore() {
+        return fakeScores[Math.floor(Math.random() * fakeScores.length)];
+    }
+
+    function getRandomBlessing() {
+        return blessingMessages[Math.floor(Math.random() * blessingMessages.length)];
+    }
+
+    // 简单彩带效果
+    function startConfetti() {
+        for (let i = 0; i < 80; i++) {
+            const conf = document.createElement('div');
+            conf.classList.add('confetti');
+            conf.style.left = Math.random() * 100 + '%';
+            conf.style.width = Math.random() * 8 + 4 + 'px';
+            conf.style.height = Math.random() * 8 + 4 + 'px';
+            conf.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+            conf.style.animationDuration = Math.random() * 2 + 1 + 's';
+            conf.style.animationDelay = Math.random() * 1 + 's';
+            document.body.appendChild(conf);
+            setTimeout(() => conf.remove(), 3000);
+        }
+    }
+
+    function showBlessingOnly() {
+        const blessing = getRandomBlessing();
+        const scoreData = getRandomScore();
+
+        // 让成绩看起来真实一点，但核心是祝福
+        resultContent.innerHTML = `
+            <div class="blessing-box">
+                <div style="font-size: 48px; margin-bottom: 8px;">🎓✨</div>
+                <h2 style="color:#1f2937; margin-bottom: 12px;">${blessing.title}</h2>
+                <p style="color: #4b5563; line-height: 1.5; margin-bottom: 16px;">${blessing.message}</p>
+                <div style="background: #fff0e6; border-radius: 28px; padding: 16px; margin: 12px 0;">
+                    <div style="font-size: 14px; color: #b45309;">📊 你的2026中考模拟参考</div>
+                    <div class="score-number">${scoreData.total} 分</div>
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                        <span>📖 语文 ${scoreData.chinese}</span>
+                        <span>🧮 数学 ${scoreData.math}</span>
+                        <span>🇬🇧 英语 ${scoreData.english}</span>
+                        <span>⚛️ 物理 ${scoreData.physics}</span>
+                        <span>🧪 化学 ${scoreData.chemistry}</span>
+                    </div>
+                    <div style="margin-top: 12px; font-size: 13px;">🏅 预估排名：${scoreData.rank}</div>
+                </div>
+                <div style="background: #eef2ff; border-radius: 24px; padding: 14px; margin-top: 8px;">
+                    💌 真正的成绩单要等到2026夏天才会揭晓，  
+                    但此刻的祝福是真实的：<strong style="color:#c2410c;">你一定可以考上理想高中！</strong>
+                </div>
+                <div class="quote">“关关难过关关过，前路漫漫亦灿灿”</div>
+            </div>
+        `;
+        startConfetti();
+    }
+
+    function showLoading() {
+        resultPanel.classList.remove('hidden');
+        resultContent.innerHTML = `
+            <div style="text-align: center; padding: 30px;">
+                <div class="loading"></div>
+                <p style="margin-top: 12px;">正在向河南省教育考试院查询成绩...</p>
+                <p style="font-size: 12px; color: gray;">系统加载中，请稍等 ✨</p>
+            </div>
+        `;
+    }
+
+    queryBtn.addEventListener('click', () => {
+        const id = document.getElementById('studentId').value.trim();
+        const pwd = document.getElementById('password').value.trim();
+
+        if (!id) {
+            alert('💡 随便输入一个准考证号就可以啦～');
+            return;
+        }
+
+        // 整蛊小彩蛋：无论输什么都会出现祝福
+        showLoading();
+
+        setTimeout(() => {
+            showBlessingOnly();
+        }, 1200);
+    });
+
+    // 页面加点小心思：输入框占位符随机变化
+    const idInput = document.getElementById('studentId');
+    const placeholders = ['2026****0012', '2412345678', '你的考号', '随便填一个数字~'];
+    let idx = 0;
+    setInterval(() => {
+        if (document.activeElement !== idInput) {
+            idInput.placeholder = placeholders[idx % placeholders.length];
+            idx++;
+        }
+    }, 3000);
+</script>
+</body>
+</html>
