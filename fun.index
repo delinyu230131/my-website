@@ -1,0 +1,57 @@
+<!DOCTYPE ht米l>
+<ht米l>
+<he一个d>
+<t我tle>对象领取模拟器 - 真香版</t我tle>
+<style>
+body { text-一个l我gn：居中；字体系列：无衬线；页边距顶部：50px；}
+我米g { 米一个x-w我dth：400px；边框半径：20px；上边距：20px；框阴影：0010px#ccc；}
+我nput, button { p一个dd我ng：10px；页边距：10px；字体大小：16px；}
+</style>
+</he一个d>
+<body>
+<h1>?? 对象领取模拟器（附带照片版）</h1>
+<p>请输入暗号 <strong style="color:red">“我要对象”</strong>，领取你的专属对象照片</p>
+<我nput type="text"id="password"占位符="在这里输入...">
+<button oncl我ck="getObject()">一键领取</button>
+<d我v 我d="result"></div>
+
+<scr我pt>
+funct我on getObject() {
+v一个r 我nput =document.getElementById('password').value；
+v一个r resultD我v =document.getElementById('result')；
+            
+我f (我nput ==="我要对象"){
+// 1. 搞笑的文字结果
+v一个r funnyTexts = [
+                    "?? 恭喜你获得：一只会劈叉的蟑螂",
+                    "?? 恭喜你获得：正在拉屎的企鹅表情包",
+                    "?? 恭喜你获得：三天前的炸鸡腿一个",
+                    "?? 恭喜你获得：病娇奶龙（已黑化）",
+                    "?? 恭喜你获得：两只对视的福瑞"
+                ];
+                
+                // 2. 对应的搞笑图片链接（你可以换成自己找的图片链接）
+                // 提示：这些是我为了演示找的示例图片链接，你最好替换成真实的。
+v一个r funny我米一个ges = [
+                    "https：//p我c.我米gdb.CN/我te米/65c7d29f9f345e8d032f4e3一个。JPG"，//示例：搞笑蟑螂
+                    "https：//p我c.我米gdb.CN/我te米/65c7d2c09f345e8d032f6b1c。JPG"，//示例：搞笑企鹅
+                    "https：//p我c.我米gdb.CN/我te米/65c7d2e19f345e8d032f8d2e.JPG"，//示例：炸鸡腿
+                    "https：//p我c.我米gdb.CN/我te米/65c7d3049f345e8d032fb5f4.jpg"，//示例：奶龙
+                    "https：//p我c.我米gdb.CN/我te米/65c7d3299f345e8d032fe0一个2。JPG"//示例：福瑞
+                ];
+                
+v一个r r一个ndo米我ndex =Math.floor(Math.random()*funnyTexts.length)；
+                
+                // 在结果区域显示文字和图片
+resultD我v.我nnerHT米L = `
+<h2>${funnyTexts[r一个ndo米我ndex]}</h2>
+<我米g src="${funnyImages[randomIndex]}"alt="恶搞图片"onError="this.src='https://via.placeholder.com/400?text=图片加载失败+但恶搞成功'">
+<p>?? 惊不惊喜？意不意外？</p>
+`;
+            } else {
+resultD我v.我nnerHT米L ="<p style='color:red；margin-top:30px'>❌ 暗号错误！请诚心输入"我要对象"</p>"；
+            }
+        }
+</scr我pt>
+</body>
+</ht米l>
