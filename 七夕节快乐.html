@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>许珺瑶 专属 ❤️</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff6b8b, #ff8aa8);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, sans-serif;
+        }
+        .card {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #ff6b8b;
+            font-size: 28px;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #ffe0e8;
+            border-radius: 50px;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(135deg, #ff6b8b, #ff8aa8);
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .heart {
+            font-size: 60px;
+            margin: 10px 0;
+        }
+        .message {
+            font-size: 18px;
+            color: #555;
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>💖 许珺瑶专属 💖</h1>
+    <p style="color:#999;">输入你的名字，验证身份</p>
+    <input type="text" id="nameInput" placeholder="请输入你的名字">
+    <button onclick="checkName()">🔑 验证</button>
+    
+    <div id="locked" class="hidden">
+        <p style="color:#ff6b8b;font-weight:bold;">🔒 程序已锁定</p>
+        <p style="color:#999;">只有许珺瑶才能打开</p>
+    </div>
+    
+    <div id="unlocked" class="hidden">
+        <div class="heart">❤️</div>
+        <h2>许珺瑶，我喜欢你</h2>
+        <div class="message">
+            从认识你开始<br>
+            我就想每天跟你说说话<br>
+            你不回我我就等着<br>
+            你回我我就开心一整天<br>
+            <br>
+            七夕节快乐 💕
+        </div>
+        <button onclick="showLove()">💌 点我有惊喜</button>
+        <div id="surprise" class="hidden" style="margin-top:15px;font-size:24px;color:#ff6b8b;">
+            💖 我也喜欢你！在一起吧 💖
+        </div>
+    </div>
+</div>
+
+<script>
+function checkName() {
+    let name = document.getElementById('nameInput').value.trim();
+    if (name === "许珺瑶") {
+        document.getElementById('locked').classList.add('hidden');
+        document.getElementById('unlocked').classList.remove('hidden');
+    } else {
+        document.getElementById('locked').classList.remove('hidden');
+        document.getElementById('unlocked').classList.add('hidden');
+    }
+}
+
+function showLove() {
+    let surprise = document.getElementById('surprise');
+    if (surprise.classList.contains('hidden')) {
+        surprise.classList.remove('hidden');
+    } else {
+        surprise.classList.add('hidden');
+    }
+}
+</script>
+</body>
+</html>
